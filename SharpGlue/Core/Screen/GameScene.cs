@@ -4,6 +4,7 @@
  * Sharpboy.org
  * Stephen Hale
 */
+using SharpGlue.Core.Content;
 using SharpGlue.Core.Graphics;
 using SharpGlue.Core.Input;
 
@@ -94,7 +95,7 @@ namespace SharpGlue.Core.Screen
         // from being paused or tombstoned.
         // instancePreserved is true if the game was preserved during deactivation, false if the screen is
         // just being added or if the game was tombstoned. On Xbox and Windows this will always be false.
-        public virtual void LoadContent(bool instancePreserved) { }
+        public virtual void LoadContent(bool instancePreserved, ContentManager content) { }
 
         // Deactivates the screen. Called when the game is being deactivated due to pausing or tombstoning.
         protected virtual void Deactivate() { }

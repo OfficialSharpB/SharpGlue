@@ -26,6 +26,11 @@ namespace SharpGlue.Core
         }
 
         /// <summary>
+        /// Gets the current game.
+        /// </summary>
+        public Game Game => game;
+
+        /// <summary>
         /// Initalize a new instance of <see cref="DrawableGameComponent"/>
         /// </summary>
         /// <param name="game"></param>

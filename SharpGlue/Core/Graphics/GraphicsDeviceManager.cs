@@ -16,6 +16,8 @@ namespace SharpGlue.Core.Graphics
     {
         int defaultHeight = 800;
         int defaultWidth = 600;
+        bool vsync = false;
+
         Game game;
 
         /// <summary>
@@ -37,6 +39,23 @@ namespace SharpGlue.Core.Graphics
         }
 
         /// <summary>
+        /// Gets or sets weather to use virtical sync, to prevent screen tearing.
+        /// </summary>
+        public bool VSyncronization
+        {
+            get => vsync;
+            set => vsync = value;
+        }
+
+        /// <summary>
+        /// Gets or sets weather the current <see cref="GraphicsDevice.renderWindow"/> is visible.
+        /// </summary>
+        public bool Visible
+        {
+            get;
+            set;
+        }
+        /// <summary>
         /// Initialize a new instance of <see cref="GraphicsDeviceManager"/>
         /// </summary>
         /// <param name="game">The game.</param>
@@ -52,6 +71,8 @@ namespace SharpGlue.Core.Graphics
         /// </summary>
         public void ApplyChanges() {
             game.Window.renderWindow.Size = new SFML.System.Vector2u((uint)PreferedBackBufferWidth, (uint)PreferedBackBufferHeight);
+            game.Window.renderWindow.SetVerticalSyncEnabled(vsync);
+            game.Window.renderWindow.SetVisible(Visible);
         }
     }
 }

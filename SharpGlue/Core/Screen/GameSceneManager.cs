@@ -65,7 +65,7 @@ namespace SharpGlue.Core.Screen
 
             // Tell each of the screens to load their content.
             foreach (var screen in _screens) {
-                screen.LoadContent(false);
+                screen.LoadContent(false, Game.Content);
             }
         }
 
@@ -120,7 +120,7 @@ namespace SharpGlue.Core.Screen
 
             // If we have a graphics device, tell the screen to load content.
             if (_isInitialized)
-                screen.LoadContent(false);
+                screen.LoadContent(false, Game.Content);
 
             _screens.Add(screen);
         }

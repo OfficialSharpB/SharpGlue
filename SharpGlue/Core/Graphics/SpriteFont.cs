@@ -15,7 +15,7 @@ namespace SharpGlue.Core.Graphics
     /// <summary>
     /// Represents a font.
     /// </summary>
-    public class SpriteFont : IAsset
+    public class SpriteFont : ILoadableContent
     {
         int size;
 

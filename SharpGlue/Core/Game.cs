@@ -1,6 +1,7 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 
+using SharpGlue.Core.Content;
 using SharpGlue.Core.Graphics;
 
 using System;
@@ -22,10 +23,20 @@ namespace SharpGlue.Core
         Stopwatch _gameTimer;
         bool _initalized;
         List<DrawableGameComponent> components;
+        ContentManager content;
+
         const int _target = 60;
         float timeTillNextFrame = 1f / _target;
 
         bool _isMouseVisable = false;
+
+        /// <summary>
+        /// Gets the content.
+        /// </summary>
+        public ContentManager Content
+        {
+            get => content;
+        }
 
         /// <summary>
         /// Gets or sets a bool value indercating weather the mouse is visable.
@@ -96,6 +107,9 @@ namespace SharpGlue.Core
                 component.LoadContent();
         }
         public virtual void Initialize() {
+
+            content = new ContentManager(services);
+
             foreach (var component in components)
                 component.Initialize();
         }
