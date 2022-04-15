@@ -6,6 +6,7 @@
  * Website: sharpboy.org.
 */
 using SharpGlue.Base;
+using SharpGlue.Core.Audio;
 using SharpGlue.Core.Exceptions;
 using SharpGlue.Core.Graphics;
 
@@ -81,10 +82,15 @@ namespace SharpGlue.Core.Content
                 loadedContences.Add(texture, path);
                 value = texture;
             }
-            if(typeof(T) == typeof(SpriteFont)) {
+            if (typeof(T) == typeof(SpriteFont)) {
                 var spriteFont = new SpriteFont(path, 14);
                 loadedContences.Add(spriteFont, path);
-                value= spriteFont;
+                value = spriteFont;
+            }
+            if (typeof(T) == typeof(SoundEffect)) {
+                var sound = new SoundEffect(path);
+                loadedContences.Add(sound, path);
+                value = sound;
             }
 
             return (T)value;

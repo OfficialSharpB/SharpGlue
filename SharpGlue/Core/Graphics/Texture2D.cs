@@ -34,6 +34,7 @@ namespace SharpGlue.Core.Graphics
             name = System.IO.Path.GetFileNameWithoutExtension(filename);
             path = filename;
         }
+
         /// <summary>
         /// Initialize a new instance of <see cref="Texture2D"/>
         /// </summary>

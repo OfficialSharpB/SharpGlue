@@ -1,6 +1,7 @@
 ﻿using SFML.Graphics;
 
 using SharpGlue.Core;
+using SharpGlue.Core.Content;
 using SharpGlue.Core.Graphics;
 using SharpGlue.Core.Input.Methods;
 using SharpGlue.Core.Screen;
@@ -16,8 +17,8 @@ namespace SharpGlue.Tests
     internal class testscene : GameScene
     {
         SpriteFont font;
-        public override void LoadContent(bool instancePreserved) {
-            base.LoadContent(instancePreserved);
+        public override void LoadContent(bool instancePreserved, ContentManager content) {
+            base.LoadContent(instancePreserved, content);
             font = new SpriteFont(Environment.CurrentDirectory + @"\arial.ttf", 15);
         }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch) {

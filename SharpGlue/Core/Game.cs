@@ -2,10 +2,12 @@
 using SFML.System;
 
 using SharpGlue.Core.Content;
+using SharpGlue.Core.EventArgs;
 using SharpGlue.Core.Graphics;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -22,13 +24,44 @@ namespace SharpGlue.Core
         ServiceContainer services;
         Stopwatch _gameTimer;
         bool _initalized;
-        List<DrawableGameComponent> components;
+        ComponentCollection components;
         ContentManager content;
 
         const int _target = 60;
         float timeTillNextFrame = 1f / _target;
 
         bool _isMouseVisable = false;
+        IntPtr? _handle;
+        GameContext _contextSetting;
+
+        bool isFocused;
+
+
+        /// <summary>
+        /// This event is raised before Run is called.
+        /// </summary>
+        public event GameEventHandler BeforeRun;
+
+        /// <summary>
+        /// Raised when the current game has lost focus.
+        /// </summary>
+        public event GameEventHandler LostFocus;
+
+
+        /// <summary>
+        /// Raised when the current game has focused.
+        /// </summary>
+        public event GameEventHandler Focused;
+
+
+        /// <summary>
+        /// Gets a bool value indercating whether this <see cref="Game"/> has focus.
+        /// </summary>
+        /// <remarks>True; if <see cref="Game"/> has focus, otherwise false.</remarks>
+        public bool IsFocused
+        {
+            get => isFocused;
+        }
 
         /// <summary>
         /// Gets the content.
@@ -80,46 +113,113 @@ namespace SharpGlue.Core
         /// <summary>
         /// Gets the components.
         /// </summary>
-        public List<DrawableGameComponent> Components
+        public ComponentCollection Components
         {
             get => components;
         }
 
+        /// <summary>
+        /// Initialize a new instance of <see cref="Game"/>
+        /// </summary>
         public Game() {
             window = new GameWindow();
             services = new ServiceContainer();
             _gameTimer = new Stopwatch();
 
-            components = new List<DrawableGameComponent>();
+            components = new ComponentCollection();
+        }
+
+        /// <summary>
+        /// Initialize a new instance of <see cref="Game"/>
+        /// </summary>
+        public Game(GameContext context) {
+            window = new GameWindow();
+            services = new ServiceContainer();
+            _gameTimer = new Stopwatch();
+
+            components = new ComponentCollection();
+
+            _contextSetting = context;
+        }
+
+        /// <summary>
+        /// Initialize a new instance of <see cref="Game"/>
+        /// </summary>
+        /// <param name="handle">
+        /// The handle of the os specific window. 
+        /// You could use Form1.Handle, ect. For this.
+        /// </param>
+        public Game(IntPtr handle) {
+            window = new GameWindow();
+            services = new ServiceContainer();
+            _gameTimer = new Stopwatch();
+
+            components = new ComponentCollection();
+
+            _handle = handle;
+        }
+
+        /// <summary>
+        /// Initialize a new instance of <see cref="Game"/>
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <param name="context"></param>
+        public Game(IntPtr handle, GameContext context) {
+            window = new GameWindow();
+            services = new ServiceContainer();
+            _gameTimer = new Stopwatch();
+
+            components = new ComponentCollection();
+
+            _handle = handle;
+            _contextSetting = context;
         }
 
 
         public virtual void Update(GameTime gameTime) {
-            foreach (var component in components)
-                component.Update(gameTime);
+            for (int i = 0; i < components.Count; i++)
+                if (components[i] is DrawableGameComponent)
+                    ((DrawableGameComponent)components[i]).Update(gameTime);
         }
         public virtual void Draw(GameTime gameTime) {
-            foreach (var component in components)
-                component.Draw(gameTime);
+            for (int i = 0; i < components.Count; i++)
+                if (components[i] is DrawableGameComponent)
+                    if( i == components[i].DrawOrder )
+                        ((DrawableGameComponent)components[i]).Draw(gameTime);
         }
         public virtual void LoadContent() {
-            foreach (var component in components)
-                component.LoadContent();
+            for (int i = 0; i < components.Count; i++)
+                if (components[i] is DrawableGameComponent)
+                    ((DrawableGameComponent)components[i]).LoadContent();
         }
         public virtual void Initialize() {
 
             content = new ContentManager(services);
 
-            foreach (var component in components)
-                component.Initialize();
+            for (int i = 0; i < components.Count; i++)
+                if (components[i] is DrawableGameComponent)
+                    ((DrawableGameComponent)components[i]).Initialize();
         }
 
         public void Run() {
+
+            BeforeRun?.Invoke(new GameEventArgs(this));
+
             gameTime = new GameTime();
 
             if (!_initalized) {
 
-                window.renderWindow = GameWindow.CreateWindow(window.Title, window.Resizable);
+                if (_handle == null)
+                    if (_contextSetting == null)
+                        window.renderWindow = GameWindow.CreateWindow(window.Title, window.Resizable);
+                    else
+                        window.renderWindow = GameWindow.CreateWindow(window.Title, window.Resizable, _contextSetting);
+                else
+                    if (_contextSetting == null)
+                        window.renderWindow = GameWindow.CreateWindow(_handle.Value);
+                    else
+                        window.renderWindow = GameWindow.CreateWindow(_handle.Value, _contextSetting);
+
                 device = new GraphicsDevice(this);
                 services.AddService<GraphicsDevice>(device);
 
@@ -138,6 +238,8 @@ namespace SharpGlue.Core
 
             // so we can close the window.
             window.renderWindow.Closed += (s, e) => { window.renderWindow.Close(); };
+            window.renderWindow.LostFocus += (s, e) => { isFocused = false; LostFocus?.Invoke(new GameEventArgs(this)); };
+            window.renderWindow.GainedFocus += (s, e) => { isFocused = true; Focused?.Invoke(new GameEventArgs(this)); };
 
             float totalTimeBeforeUpdate = 0f;
             float previousTimeEnlapsed = 0,
@@ -145,26 +247,28 @@ namespace SharpGlue.Core
 
             _gameTimer.Reset();
             _gameTimer.Start();
-            while (window.renderWindow.IsOpen) {
-                window.renderWindow.DispatchEvents();
+            do {
+                if (isFocused) {
+                    window.renderWindow.DispatchEvents();
 
-                totalTimeEnlapsed = _gameTimer.Elapsed.Seconds;
-                deltaTime = totalTimeEnlapsed - previousTimeEnlapsed;
-                previousTimeEnlapsed = totalTimeEnlapsed;
-                totalTimeBeforeUpdate += deltaTime;
+                    totalTimeEnlapsed = _gameTimer.Elapsed.Seconds;
+                    deltaTime = totalTimeEnlapsed - previousTimeEnlapsed;
+                    previousTimeEnlapsed = totalTimeEnlapsed;
+                    totalTimeBeforeUpdate += deltaTime;
 
-                if(totalTimeEnlapsed >= timeTillNextFrame) {
-                    Update(gameTime);
+                    if (totalTimeEnlapsed >= timeTillNextFrame) {
+                        Update(gameTime);
 
-                    gameTime.update(TimeSpan.FromSeconds(totalTimeBeforeUpdate), deltaTime);
+                        gameTime.update(TimeSpan.FromMilliseconds(totalTimeBeforeUpdate), deltaTime, totalTimeBeforeUpdate);
 
-                    totalTimeBeforeUpdate = 0f;
+                        totalTimeBeforeUpdate = 0f;
 
-                    Draw(gameTime);
+                        Draw(gameTime);
 
-                    window.renderWindow.Display();
+                        window.renderWindow.Display();
+                    }
                 }
-            }
+            } while (window.renderWindow.IsOpen);
         }
 
         /// <summary>
@@ -183,6 +287,18 @@ namespace SharpGlue.Core
 
             window.renderWindow.Dispose();
             _gameTimer.Stop();
+        }
+
+        /// <summary>
+        /// Tries to focus the window.
+        /// </summary>
+        public void Focus() {
+            window.renderWindow?.RequestFocus();
+
+            if (window.renderWindow.HasFocus())
+                isFocused = true;
+            else
+                isFocused = false;
         }
     }
 }

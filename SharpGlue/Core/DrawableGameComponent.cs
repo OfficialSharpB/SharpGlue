@@ -4,6 +4,7 @@
  * Sharpboy.org
  * Stephen Hale
 */
+using SharpGlue.Base;
 using SharpGlue.Core.Graphics;
 
 using System;
@@ -13,9 +14,24 @@ namespace SharpGlue.Core
     /// <summary>
     /// Represents a drawable game component.
     /// </summary>
-    public class DrawableGameComponent
+    public class DrawableGameComponent : IComponent
     {
         Game game;
+        int drawOrder;
+
+        /// <summary>
+        /// Gets the draw order of this component.
+        /// </summary>
+        int IComponent.DrawOrder
+        {
+            get => drawOrder;
+            set => drawOrder = value;
+        }
+
+        /// <summary>
+        /// Gets the draw order of this component.
+        /// </summary>
+        public int DrawOrder => drawOrder;
 
         /// <summary>
         /// Gets the graphics device.

@@ -14,17 +14,14 @@ namespace SharpGlue.Core.Screen
 {
     public class GameSceneManager : DrawableGameComponent
     {
-        private readonly List<GameScene> _screens = new List<GameScene>();
-        private readonly List<GameScene> _tempScreensList = new List<GameScene>();
+        private readonly List<GameScene> _screens = new();
+        private readonly List<GameScene> _tempScreensList = new();
 
-        private readonly InputSystem _input = new InputSystem();
+        private readonly InputSystem _input = new();
 
         private SpriteBatch _spriteBatch;
-        private SpriteFont _font;
-        private Texture2D _blankTexture;
 
         private bool _isInitialized;
-        private bool _traceEnabled;
 
         private GraphicsDeviceManager _graphicsDeviceManager;
 

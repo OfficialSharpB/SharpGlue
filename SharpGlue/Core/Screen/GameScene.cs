@@ -18,8 +18,20 @@ namespace SharpGlue.Core.Screen
         /// <summary>
         /// Initialize a new instance of <see cref="GameScene"/>
         /// </summary>
-        public GameScene() { 
+        public GameScene() {
+            gameObjects = new();
         }
+
+
+        /// <summary>
+        /// Gets the object that are accessable from with-in this scene.
+        /// </summary>
+        public GameObjectCollection Objects
+        {
+            get => gameObjects;
+        }
+        private GameObjectCollection gameObjects;
+
         // A screen is a single layer that has update and draw logic, and which
         // can be combined with other layers to build up a complex menu system.
         // For instance the main menu, the options menu, the "are you sure you

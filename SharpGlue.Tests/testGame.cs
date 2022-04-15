@@ -1,4 +1,6 @@
-﻿using SharpGlue.Core;
+﻿using SFML.Graphics;
+
+using SharpGlue.Core;
 using SharpGlue.Core.Graphics;
 using SharpGlue.Core.Input.Methods;
 using SharpGlue.Core.Screen;
@@ -30,10 +32,10 @@ namespace SharpGlue.Tests
             base.LoadContent();
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-           
+
         }
         public override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.ConflowerBlue);
+            GraphicsDevice.Clear(Core.Color.ConflowerBlue);
             base.Draw(gameTime);
         }
     }

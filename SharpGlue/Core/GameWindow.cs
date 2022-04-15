@@ -1,4 +1,5 @@
 ﻿using SFML.Graphics;
+using SFML.Window;
 
 using System;
 using System.Collections.Generic;
@@ -42,20 +43,33 @@ namespace SharpGlue.Core
         }
 
         /// <summary>
+        /// Gets the handle.
+        /// </summary>
+        public IntPtr Pointer =>
+            renderWindow.SystemHandle;
+
+        /// <summary>
         /// Initialize a new instance of <see cref="GameWindow"/>
         /// </summary>
         public GameWindow() {
         }
 
-        /// <summary>
-        /// Create a window.
-        /// </summary>
-        /// <param name="title"></param>
-        /// <param name="resizable"></param>
-        /// <returns></returns>
         internal static RenderWindow CreateWindow(string title, bool resizable) {
             return new RenderWindow(SFML.Window.VideoMode.DesktopMode, title, resizable ? SFML.Window.Styles.Resize : SFML.Window.Styles.Close,
                 new SFML.Window.ContextSettings());
+        }
+
+        internal static RenderWindow CreateWindow(string title, bool resizable, GameContext context) {
+            return new RenderWindow(SFML.Window.VideoMode.DesktopMode, title, resizable ? SFML.Window.Styles.Resize : SFML.Window.Styles.Close,
+                new SFML.Window.ContextSettings() {  AntialiasingLevel = context.Antialiasing, DepthBits = context.DepthBits,  StencilBits = context.Stencil});
+        }
+
+        internal static RenderWindow CreateWindow(IntPtr handle) {
+            return new RenderWindow(handle);
+        }
+
+        internal static RenderWindow CreateWindow(IntPtr handle, GameContext context) {
+            return new RenderWindow(handle, new ContextSettings() { AntialiasingLevel = context.Antialiasing, DepthBits = context.DepthBits, StencilBits = context.Stencil });
         }
     }
 }

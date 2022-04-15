@@ -14,7 +14,6 @@ namespace SharpGlue.Core
     /// </summary>
     public class Viewport
     {
-        int left, right, top, bottom;
         int width, height, x, y;
 
         /// <summary>

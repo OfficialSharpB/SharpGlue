@@ -61,11 +61,11 @@ namespace SharpGlue.Core.Graphics
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public Vector2 MesureString(string text) {
+        public Size MesureString(string text) {
             var generate = SpriteFontHelper.GenerateText(this, text);
             var texture = generate.Font.GetTexture((uint)size);
 
-            return new Vector2(texture.Size.X, texture.Size.Y);
+            return new Size((int)texture.Size.X, (int)texture.Size.Y);
         }
     }
 
@@ -89,9 +89,11 @@ namespace SharpGlue.Core.Graphics
         /// <param name="color"></param>
         /// <returns></returns>
         public static SFML.Graphics.Text GenerateText(SpriteFont font, string text, Vector2 position, Color color) {
-            SFML.Graphics.Text t = new SFML.Graphics.Text(text, SpriteFontHelper.ToSFML(font), (uint)font.Size);
-            t.Position = new SFML.System.Vector2f(position.X, position.Y);
-            t.FillColor = ColorConverter.ToSFML(color);
+            SFML.Graphics.Text t = new SFML.Graphics.Text(text, SpriteFontHelper.ToSFML(font), (uint)font.Size)
+            {
+                Position = new SFML.System.Vector2f(position.X, position.Y),
+                FillColor = ColorConverter.ToSFML(color)
+            };
             return t;
         }
 

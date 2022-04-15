@@ -14,6 +14,14 @@ namespace SharpGlue.Core
     public class Rectangle : Viewport, IEquatable<Rectangle>
     {
         /// <summary>
+        /// Gets the <see cref="Size"/> of this <see cref="Rectangle"/>
+        /// </summary>
+        public Size Size
+        {
+            get => new Size(Width, Height);
+        }
+
+        /// <summary>
         /// Initialize a new instance of <see cref="Rectangle"/>
         /// </summary>
         /// <param name="x"></param>

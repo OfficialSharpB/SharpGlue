@@ -39,8 +39,6 @@ namespace SharpGlue.Core
             set => timeScale = value;
         }
 
- 
-
         /// <summary>
         /// Gets the enlapsed time.
         /// </summary>
@@ -49,9 +47,10 @@ namespace SharpGlue.Core
             get => totalEnlapsedTime;
         }
 
-        internal void update(TimeSpan enlapsed, float deltaTime) {
+        internal void update(TimeSpan enlapsed, float deltaTime, float timeScale) {
             this.deltaTime = deltaTime;
             this.totalEnlapsedTime = enlapsed;
+            this.timeScale = timeScale;
         }
     }
 }
